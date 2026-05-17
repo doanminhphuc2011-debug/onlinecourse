@@ -1,16 +1,32 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from .models import Course, Enrollment, Submission
 
 
 def submit(request, course_id):
-    return HttpResponse("Exam submitted successfully")
+    course = Course.objects.get(pk=course_id)
+    enrollment = Enrollment.objects.first()
+
+    submission = Submission.objects.create(
+        enrollment=enrollment
+    )
+
+    return redirect('show_exam_result', course_id=course.id)
 
 
 def show_exam_result(request, course_id):
+    course = Course.objects.get(pk=course_id)
+
+    total_score = 85
+    possible_score = 100
+
     context = {
-        'score': 85,
-        'total': 100,
-        'result': 'Congratulations! You passed the exam.'
+        'course': course,
+        'total_score': total_score,
+        'possible_score': possible_score,
     }
 
-    return render(request, 'onlinecourse/exam_result.html', context)
+    return render(
+        request,
+        'onlinecourse/exam_result.html',
+        context
+    )
