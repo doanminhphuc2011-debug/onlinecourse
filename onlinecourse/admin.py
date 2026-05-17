@@ -5,8 +5,8 @@ from .models import Enrollment
 from .models import Question
 from .models import Choice
 from .models import Submission
-from .models import Instructor, Learner
-from django.contrib.auth.models import User
+from .models import Instructor
+from .models import Learner
 
 class ChoiceInline(admin.TabularInline):
     model = Choice
@@ -24,7 +24,9 @@ class QuestionAdmin(admin.ModelAdmin):
     list_display = ['question_text']
 
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    inlines = [QuestionInline]
+    list_filter = ['name']
+    search_fields = ['name']
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Lesson, LessonAdmin)
