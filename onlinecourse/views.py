@@ -26,13 +26,20 @@ def submit(request, course_id):
 def show_exam_result(request, course_id):
     course = Course.objects.get(pk=course_id)
 
+    submission = Submission.objects.first()
+
     total_score = 0
     possible_score = 0
 
     for question in course.question_set.all():
+
         possible_score += question.grade
 
         selected_ids = []
+
+        for choice in submission.choices.all():
+            if choice.question.id == question.id:
+                selected_ids.append(choice.id)
 
         if question.is_get_score(selected_ids):
             total_score += question.grade
