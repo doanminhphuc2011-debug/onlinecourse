@@ -1,6 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class Instructor(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class Learner(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
 class Course(models.Model):
     name = models.CharField(max_length=100)
 
@@ -14,7 +20,13 @@ class Enrollment(models.Model):
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
+    grade = models.IntegerField(default=1)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def is_get_score(self, selected_ids):
+        correct_choices = self.choice_set.filter(is_correct=True)
+        correct_ids = set(choice.id for choice in correct_choices)
+        return correct_ids == set(selected_ids)
 
 class Choice(models.Model):
     choice_text = models.CharField(max_length=200)
@@ -24,5 +36,6 @@ class Choice(models.Model):
 class Submission(models.Model):
     enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
     choices = models.ManyToManyField(Choice)
+
     def __str__(self):
-        return f"Submission {self.id}"
+        return f"{self.enrollment.id}"
